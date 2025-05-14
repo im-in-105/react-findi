@@ -62,10 +62,17 @@
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
+    display: inline-block; /* 버튼처럼 보이게 하기 위해 display를 inline-block으로 설정 */
+    text-decoration: none; /* a 태그의 기본 밑줄 제거 */
     transition: background-color 0.3s ease;
-    margin-top: 2rem;
+    margin-top: 2rem; /* 위쪽 여백 */
 }
 
 .cta-button:hover {
     background-color: #0056b3; /* 버튼 호버시 색상 변경 */
+}
+
+/* a 태그로 변경된 버튼 위치 조정 */
+.cta-button {
+    margin-top: 3rem; /* 더 아래로 내려가기 위해 여백을 늘림 */
 }
