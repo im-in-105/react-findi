@@ -19,9 +19,15 @@ function Nav({ isAuthenticated = false }) {
                 </button>
 
                 <div className="nav-items">
-                    <button onClick={() => navigate('/question')}>고민상담</button>
-                    <button onClick={() => navigate('/chatbot')}>정보 알리미</button>
-                    <button onClick={() => navigate('/roommate')}>룸메이트 찾기</button>
+                    <button type="button" onClick={() => window.location.href = '/question?page=0'}>
+                        고민상담
+                    </button>
+                    <button type="button" onClick={() => window.location.href = '/chatbot'}>
+                        정보 알리미
+                    </button>
+                    <button type="button" onClick={() => window.location.href = '/roommate'}>
+                        룸메이트 찾기
+                    </button>
                 </div>
 
                 <div className="search-login">
