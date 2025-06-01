@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./components/Home";
+import Details from "./components/Details"
 import Split from "./components/Split";
 import Etcetera from "./components/Etcetera";
 import Footer from "./components/Footer";
@@ -9,7 +10,6 @@ import RoommateResult from "./components/RoommateResult";
 function App() {
     // location 훅을 이용하려면 App을 BrowserRouter 내부로 감싸는 별도 컴포넌트로 분리하거나,
     // BrowserRouter를 최상단에 둔 후 내부에서 location을 사용해야 합니다.
-    // 그래서 AppContent 컴포넌트로 분리해보겠습니다.
 
     return (
         <BrowserRouter>

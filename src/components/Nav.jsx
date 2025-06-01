@@ -12,8 +12,8 @@ function Nav({ isAuthenticated = false }) {
                 <button
                     type="button"
                     className="logo"
-                    style={{background: 'none', border: 'none'}}
-                    onClick={() => navigate('/home')}
+                    style={{ background: 'none', border: 'none' }}
+                    onClick={() => navigate('/')}
                 >
                     <h1 className="logo-text">Findi</h1>
                 </button>
@@ -45,7 +45,7 @@ function Nav({ isAuthenticated = false }) {
 
                     <button
                         className="signup-btn"
-                        onClick={() => navigate('/signup')}
+                        onClick={() => window.location.href = '/member/register'}
                     >
                         회원가입
                     </button>
