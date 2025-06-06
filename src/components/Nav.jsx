@@ -28,27 +28,50 @@ function Nav({ isAuthenticated = false }) {
                     <button type="button" onClick={() => window.location.href = '/roommate'}>
                         룸메이트 찾기
                     </button>
+
+                    <form action="/calendar" method="get" style={{ display: 'inline' }}>
+                        <button type="submit">학사일정 알리미</button>
+                    </form>
+                    <form action="/chat/room/0" method="get" style={{ display: 'inline' }}>
+                        <button type="submit">대학 채팅방</button>
+                    </form>
                 </div>
 
+
+
                 <div className="search-login">
-                    <input type="search" placeholder="검색"/>
+                    <input type="search" placeholder="검색" />
 
-                    {isAuthenticated ? (
-                        <a href="/member/logout" className="login-btn" style={{textDecoration: 'none'}}>
-                            로그아웃
-                        </a>
-                    ) : (
-                        <a href="/member/login" className="login-btn" style={{textDecoration: 'none'}}>
-                            로그인
-                        </a>
-                    )}
-
-                    <button
-                        className="signup-btn"
-                        onClick={() => window.location.href = '/member/register'}
-                    >
-                        회원가입
-                    </button>
+                  {/*{isAuthenticated ? (*/}
+                  {/*      <>*/}
+                  {/*          <a href="/member/logout" className="login-btn" style={{ textDecoration: 'none' }}>*/}
+                  {/*              로그아웃*/}
+                  {/*          </a>*/}
+                  {/*          /!* 회원가입 버튼 숨김 *!/*/}
+                  {/*      </>*/}
+                  {/*  ) : (*/}
+                  {/*      <>*/}
+                  {/*          <a href="/member/login" className="login-btn" style={{ textDecoration: 'none' }}>*/}
+                  {/*              로그인*/}
+                  {/*          </a>*/}
+                  {/*          <button*/}
+                  {/*              className="signup-btn"*/}
+                  {/*              onClick={() => window.location.href = '/signup'}*/}
+                  {/*          >*/}
+                  {/*              회원가입*/}
+                  {/*          </button>*/}
+                  {/*      </>*/}
+                  {/*  )}*/}
+                  {/*  */
+                      <a href="/member/login" className="login-btn" style={{ textDecoration: 'none' }}>
+                          로그인
+                      </a>}
+                      <button
+                      className="signup-btn"
+                      onClick={() => (window.location.href = '/signup')}
+                >
+                    회원가입
+                </button>
                 </div>
             </nav>
         </header>
