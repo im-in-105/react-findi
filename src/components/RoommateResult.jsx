@@ -1,109 +1,91 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "../styles/Result_room.css";
+import { useNavigate } from "react-router-dom";
 
 const RoommateResult = () => {
-    const [profile, setProfile] = useState(null);
     const [resultList, setResultList] = useState([]);
+    const [profile, setProfile] = useState(null);
     const [selected, setSelected] = useState(null);
-
     const navigate = useNavigate();
+
+    const genderText = (val) => (val === "0" || val === 0 ? "남성" : "여성");
+    const lifePatternText = (val) => (val === "0" || val === 0 ? "아침형" : "저녁형");
+    const smokingText = (val) => (val === "1" || val === 1 ? "흡연" : "비흡연");
 
     useEffect(() => {
         const stored = localStorage.getItem("roommateProfile");
-        if (stored) {
-            const parsed = JSON.parse(stored);
-            setProfile(parsed);
-            requestMatching(parsed);
-        } else {
-            alert("프로필이 입력되지 않았습니다.");
+
+        if (!stored) {
+            alert("❌ 프로필 정보 없음. 홈으로 이동합니다.");
+            navigate("/"); // ✅ 렌더링 중이 아닌 useEffect 안에서 navigate 사용
+            return;
         }
-    }, []);
 
-    const genderText = (val) => (val === 0 ? "남성" : val === 1 ? "여성" : "알수없음");
-    const lifePatternText = (val) => (val === 0 ? "아침형" : val === 1 ? "저녁형" : "알수없음");
-    const smokingText = (val) => (val === 1 ? "흡연" : "비흡연");
+        const parsed = JSON.parse(stored);
+        setProfile(parsed);
 
-    const requestMatching = async (profile) => {
-        try {
-            const response = await fetch("http://192.168.0.18:5000/handleMatch", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: profile.name,
-                    gender: parseInt(profile.gender),
-                    mbti: profile.mbti,
-                    is_Smoking: parseInt(profile.isSmoking),
-                    life_pattern: parseInt(profile.life_pattern),
-                }),
-            });
+        const fetchMatch = async () => {
+            try {
+                const res = await fetch("http://192.168.0.18:5000/handleMatch", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: parsed.name,
+                        gender: parseInt(parsed.gender),
+                        mbti: parsed.mbti,
+                        is_Smoking: parseInt(parsed.is_Smoking),
+                        life_pattern: parseInt(parsed.life_pattern),
+                    }),
+                });
 
-            if (!response.ok) {
-                const text = await response.text();
-                console.error("서버 응답 오류:", response.status, text);
-                alert("매칭 요청 실패");
-                return;
+                if (!res.ok) throw new Error("매칭 실패");
+
+                const result = await res.json();
+                setResultList(result.recommended || []);
+            } catch (err) {
+                console.error("❌ 매칭 요청 중 오류:", err);
+                alert("Flask 서버 연결 실패");
             }
+        };
 
-            const result = await response.json();
-            const normalized = (result.recommended || []).map((item) => ({
-                name: item.name,
-                gender: parseInt(item.gender),
-                mbti: item.mbti,
-                life_pattern: parseInt(item.life_pattern),
-                isSmoking: item.isSmoking === true || parseInt(item.isSmoking) === 1,
-                similarity: item.score ?? 0,
-            }));
-
-            setResultList(normalized);
-        } catch (err) {
-            console.error(err);
-            alert("매칭 요청 중 오류가 발생했습니다.");
-        }
-    };
+        fetchMatch();
+    }, [navigate]); // ✅ navigate 함수 자체만 dependency로 넣음 (navigate() X)
 
     return (
         <div className="roommate-wrapper">
             <div className="container left">
+                <h2>입력된 프로필</h2>
                 {profile && (
-                    <>
-                        <h2>입력된 프로필</h2>
-                        <table>
-                            <tbody>
-                            {Object.entries(profile).map(([key, value]) => (
-                                <tr key={key}>
-                                    <th>{key}</th>
-                                    <td>
-                                        {key === "gender"
-                                            ? genderText(Number(value))
-                                            : key === "life_pattern"
-                                                ? lifePatternText(Number(value))
-                                                : key === "isSmoking"
-                                                    ? smokingText(Number(value))
-                                                    : value}
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </>
+                    <table>
+                        <tbody>
+                        <tr><th>name</th><td>{profile.name}</td></tr>
+                        <tr><th>gender</th><td>{genderText(profile.gender)}</td></tr>
+                        <tr><th>birth</th><td>{profile.birth}</td></tr>
+                        <tr><th>student_id</th><td>{profile.student_id}</td></tr>
+                        <tr><th>major</th><td>{profile.major}</td></tr>
+                        <tr><th>mbti</th><td>{profile.mbti}</td></tr>
+                        <tr><th>life_pattern</th><td>{lifePatternText(profile.life_pattern)}</td></tr>
+                        <tr><th>isSmoking</th><td>{smokingText(profile.is_Smoking)}</td></tr>
+                        </tbody>
+                    </table>
                 )}
             </div>
 
             <div className="container right">
                 <h2>룸메이트 매칭 결과</h2>
                 {resultList.length === 0 ? (
-                    <p>추천 룸메이트가 없습니다.</p>
+                    <p>추천 없음</p>
                 ) : (
                     <table>
                         <thead>
                         <tr>
                             <th>선택</th>
                             <th>이름</th>
-                            <th>성별</th>
                             <th>MBTI</th>
+                            <th>전공</th>
+                            <th>학번</th>
+                            <th>흡연</th>
                             <th>생활패턴</th>
-                            <th>흡연 여부</th>
                             <th>정확도</th>
                         </tr>
                         </thead>
@@ -114,20 +96,19 @@ const RoommateResult = () => {
                                     <button
                                         onClick={() => {
                                             setSelected(idx);
-                                            console.log("✅ 선택된 룸메이트:", item);
-                                            alert("룸메이트 매칭을 완료하였습니다!");
-                                            navigate("/");
+                                            alert("룸메이트 매칭 완료!");
                                         }}
                                     >
                                         {selected === idx ? "✔ 선택됨" : "선택"}
                                     </button>
                                 </td>
                                 <td>{item.name}</td>
-                                <td>{genderText(item.gender)}</td>
                                 <td>{item.mbti}</td>
+                                <td>{item.major}</td>
+                                <td>{item.student_id}</td>
+                                <td>{smokingText(item.is_Smoking)}</td>
                                 <td>{lifePatternText(item.life_pattern)}</td>
-                                <td>{smokingText(item.isSmoking)}</td>
-                                <td>{(item.similarity * 100).toFixed(2)}%</td>
+                                <td>{(item.score * 100).toFixed(2)}%</td>
                             </tr>
                         ))}
                         </tbody>
