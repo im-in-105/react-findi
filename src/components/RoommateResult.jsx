@@ -26,7 +26,7 @@ const RoommateResult = () => {
 
         const fetchMatch = async () => {
             try {
-                const res = await fetch("http://192.168.0.18:5000/handleMatch", {
+                const res = await fetch("http://192.168.55.13:5000/handleMatch", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -95,11 +95,35 @@ const RoommateResult = () => {
                                 <td>
                                     <button
                                         onClick={() => {
-                                            setSelected(idx);
-                                            alert("룸메이트 매칭 완료!");
+                                            const confirmed = window.confirm(`${item.name} 학생에게 룸메이트 신청을 하시겠습니까?`);
+                                            if (confirmed) {
+                                                setSelected(idx);
+
+                                                // ✅ 이름만 담아서 백엔드로 요청
+                                                fetch("http://localhost:5000/send_email", {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                    },
+                                                    body: JSON.stringify({
+                                                        to_name: item.name,
+                                                    }),
+                                                })
+                                                    .then((res) => res.json())
+                                                    .then((data) => {
+                                                        if (data.status === "success") {
+                                                            alert("룸메이트 신청 완료!");
+                                                        } else {
+                                                            alert("룸메이트 신청 실패: " + data.message);
+                                                        }
+                                                    })
+                                                    .catch((err) => {
+                                                        alert("에러 발생: " + err.message);
+                                                    });
+                                            }
                                         }}
                                     >
-                                        {selected === idx ? "✔ 선택됨" : "선택"}
+                                        {selected === idx ? "선택됨" : "선택"}
                                     </button>
                                 </td>
                                 <td>{item.name}</td>
