@@ -3,6 +3,17 @@ import "../styles/Result_room.css";
 import { useNavigate } from "react-router-dom";
 
 const RoommateResult = () => {
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        gender: "",
+        birth: "",
+        student_id: "",
+        major: "",
+        mbti: "",
+        life_pattern: "",
+        is_Smoking: "",
+    });
     const [resultList, setResultList] = useState([]);
     const [profile, setProfile] = useState(null);
     const [selected, setSelected] = useState(null);
@@ -11,6 +22,35 @@ const RoommateResult = () => {
     const genderText = (val) => (val === "0" || val === 0 ? "남성" : "여성");
     const lifePatternText = (val) => (val === "0" || val === 0 ? "아침형" : "저녁형");
     const smokingText = (val) => (val === "1" || val === 1 ? "흡연" : "비흡연");
+
+    useEffect(() => {
+        const fetchSessionInfo = async () => {
+            try {
+                const res = await fetch("http://localhost:8080/api/member/session-info", {
+                    credentials: "include",  // 중요! 세션 쿠키 유지
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    setFormData(prev => ({
+                        ...prev,
+                        name: data.username || "",  // 세션에서 받은 값
+                        email: data.email || ""
+                    }));
+                } else {
+                    console.warn("세션 정보 없음");
+                }
+            } catch (error) {
+                console.error("세션 불러오기 실패", error);
+            }
+        };
+
+        fetchSessionInfo();
+    }, []);
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
     useEffect(() => {
         const stored = localStorage.getItem("roommateProfile");
@@ -105,8 +145,10 @@ const RoommateResult = () => {
                                                     headers: {
                                                         "Content-Type": "application/json",
                                                     },
+                                                    credentials: "include",
                                                     body: JSON.stringify({
                                                         to_name: item.name,
+                                                        name:formData.name,
                                                     }),
                                                 })
                                                     .then((res) => res.json())
