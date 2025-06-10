@@ -66,7 +66,7 @@ const RoommateResult = () => {
 
         const fetchMatch = async () => {
             try {
-                const res = await fetch("http://192.168.55.13:5000/handleMatch", {
+                const res = await fetch("http://192.168.0.18:5000/handleMatch", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
